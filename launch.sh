@@ -17,30 +17,53 @@ function usage() {
 
 function build() {
   cd $WORKDIR
+  
   echo "Building into $BUILD/..."
   conan install . --output-folder=$BUILD --build=missing
+
   echo "Entering $BUILD/..."
   cd $BUILD
+
   # export CMAKE_GENERATOR="Visual Studio 17 2022" to set default for CMake>=3.15
   echo "Generating build system using env CMAKE_GENERATOR=$CMAKE_GENERATOR..."
-  cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake
+  cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$CONFIG
+  
   echo "Building with $CONFIG..."
   cmake --build . --config $CONFIG
+  
   echo "Build finished."
 }
 
 function run() {
   cd $WORKDIR
+  
   echo "Running with $CONFIG..."
   echo ""
-  ./$BUILD/$CONFIG/$BIN.exe
+
+  if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
+    # windows environment
+    EXECUTABLE="$BUILD/$CONFIG/$BIN.exe"
+  else
+    # unix-based environment
+    EXECUTABLE="$BUILD/$BIN"
+  fi
+
+  if [[ -f "$EXECUTABLE" ]]; then
+    ./"$EXECUTABLE"
+  else
+    echo "Error - executable $EXECUTABLE not found"
+    exit 1
+  fi
 }
 
 function clean() {
   cd $WORKDIR
+  
   echo "Cleaning..."
+
   rm -r build/
   rm CMakeUserPresets.json
+
   echo "Cleaned!"
 }
 
