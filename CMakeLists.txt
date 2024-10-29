@@ -3,5 +3,7 @@ project(compressor C)
 
 find_package(ZLIB REQUIRED)
 
-add_executable(${PROJECT_NAME} src/main.c)
+file(GLOB SOURCES "src/*.c")
+
+add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ZLIB::ZLIB)
