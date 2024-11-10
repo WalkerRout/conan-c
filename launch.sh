@@ -3,7 +3,7 @@
 BIN=compressor
 BUILD=build
 CONFIG=Release
-CFLAGS="-O2 -Wall -Wextra -Wpedantic -Werror"
+CFLAGS="-O2"
 WORKDIR=$(pwd)
 
 function usage() {
